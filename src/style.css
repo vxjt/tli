@@ -1,0 +1,99 @@
+:root {
+	--color-a: #111111;
+	--color-b: #dddddd;
+	font-size: medium;
+	font-family: system-ui;
+}
+
+::selection {
+	background-color: var(--color-b);
+	color: var(--color-a);
+}
+
+body {
+	background-color: var(--color-a);
+	color: var(--color-b);
+	margin: 2rem 4rch 1rem 4rch;
+	line-height: 1.6;
+}
+
+h1 {
+	font-size: 2.62rem;
+	margin: 0;
+}
+
+h2 {
+	font-size: 1.62rem;
+	margin: 0;
+}
+
+input {
+	background-color: var(--color-a);
+	color: var(--color-b);
+}
+
+input:focus {
+	outline: 0
+}
+
+input:invalid {
+	border-style: dotted;
+	border-width: 0 0 0.16rem 0;
+}
+
+input[type="button"] {
+	border: 0.1rem solid var(--color-b);
+	font-family: system-ui;
+	width: 12rch;
+	font-size: 1rem;
+}
+
+input[type="button"]:active {
+	background-color: var(--color-b);
+	color: var(--color-a);
+}
+
+input[type="button"]:hover {
+	cursor: pointer;
+}
+
+input[type="button"]:focus {
+	background-color: var(--color-b);
+	color: var(--color-a);
+}
+
+input[type="text"] {
+	border-width: 0 0 0.1rem 0;
+	border-style: solid;
+	border-color: var(--color-b);
+	width: 10rch;
+	text-align: end;
+	font-size: 1rem;
+	margin-left: 2rch;
+}
+
+label {
+	display: block;
+}
+
+.column {
+	flex-direction: column;
+}
+
+.flex {
+	display: inline-flex;
+}
+
+.solid {
+	border-width: 0 0 0.1rem 0;
+	border-style: solid;
+	border-color: var(--color-b);
+}
+
+.space-between {
+	justify-content: space-between;
+}
+
+.space-between > div:first-child {
+	margin-right: 4rch;
+}
