@@ -6,6 +6,16 @@ $$ {attack \  v} = 1 - \frac {1.15a} {a + 0.5 x ^ {3 / 4}} $$
 $$ {spell \  v} = 1 - \frac {1.15a} {a + 0.5 (0.6 x) ^ {3 / 4}} $$
 $$ a = \frac {x ^ {3 / 4} ( 0.5 - 0.5v )} {v + 0.15} $$
 
+# Numbed
+
+Numbed increases lightning damage by 5% per stack for 2s.
+
+New stacks seem to only come from unique sources.
+
+Thunder Strike seems to alternate between 1 and 2 base stacks from the 1 stack/s from shadows.  The stack is refreshed when the next hit happens after the 1s cooldown.
+The effect is 1 / 2 / 1 / 2.. 
+Doesn't seem to scale with attack speed.
+
 # Future
 
 - Input validation
@@ -16,4 +26,8 @@ $$ a = \frac {x ^ {3 / 4} ( 0.5 - 0.5v )} {v + 0.15} $$
 - Allow inputs to be inline and add line break logic from results
 - Header logic
 - Read more about imports
-- Make sure results aren't being saved
+
+# WinGet
+
+Git.Git
+OpenJS.NodeJS

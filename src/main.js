@@ -1,6 +1,5 @@
 import './magoo.js'
 
-const doc_div = document.querySelector("#doc")
 var input_divs
 var autosave = true
 
@@ -18,7 +17,7 @@ var sheet = {
 	damage: {
 		label: "Damage",
 		min: 0,
-		variants: ["physical"],
+		variants: ["physical", "lightning"],
 	},
 	critical_strike_rating: {
 		label: "Critical Strike Rating",
@@ -28,89 +27,159 @@ var sheet = {
 		label: "Attack Speed",
 		min: 0,
 	},
+	dual_wield: {
+		label: "Dual Wield",
+		checkbox: true,
+	},
 }
 
 var invincible = {
 	resistance: 0.49,
 }
 
-var hit_map = new Map()
-
 var results = {
 	attack_speed: {
 		name: "Attack Speed",
-		value: null,
 		figs: 2,
 	},
+	attack_speed_add: {
+		name: "Attack Speed Additional Bonus",
+		percent: true,
+	},
 	critical_chance: {
-		name: "Critical Strike Chance",
+		name: "Attack Critical Chance",
 		figs: 2,
 		percent: true,
-		value: null,
+	},
+	critical_damage: {
+		name: "Attack Critical Strike Damage",
+		percent: true,
+	},
+	numbed_effect: {
+		name: "Numbed Effect",
+		percent: true,
 	},
 }
 
-var skill = {
+/*var skill = {
 	corrosive_throw: {
 		name: "Corrosive Throw",
 		scale: 3.83,
-		tags: ["dexterity"],
+		tags: ["dexterity", "erosion"],
 		cost: 5,
 	},
+	lightning_attack: {
+		name: "Lightning Attack",
+		scale: 3.33,
+		tags: ["dexterity", "lightning"],
+		cost: 5,
+	}
 }
+
+var mans = {
+	green_mans: {
+		name: "Green",
+	},
+	lightning_mans: {
+		name: "Lightning",
+		trait: {
+			name: "trait",
+			script: "",
+		},
+		talents: [
+			[
+				{
+					name: "asdf",
+					script: "",
+				},
+				{
+					name: "bbs",
+					script: ""
+				},
+			],
+			[
+				{
+					name: "ceaw",
+					script: "",
+				},
+				{
+					name: "nae",
+					script: ""
+				},
+			],
+			[
+				{
+					name: "jydu",
+					script: "",
+				},
+				{
+					name: "faew",
+					script: ""
+				},
+			],
+		],
+	},
+} */
 
 init()
 calc()
 calc_draw()
 
 function init() {
-	document.addEventListener("visibilitychange", eventswitch)
 
 	/* load */
 
-	let _sheet = JSON.parse(localStorage.getItem("sheet"))
+	let save_sheet = JSON.parse(localStorage.getItem("sheet"))
 
-	if (_sheet != null) {
-		for (let k in _sheet) {
+	if (save_sheet != null) {
+		for (let k in save_sheet) {
 			if (sheet[k] != undefined) {
-				sheet[k] = _sheet[k]
+				sheet[k] = save_sheet[k]
 			}
 		}
 	}
 
-	/* place elements */
+	/* place input elements */
 
-	let _h = document.createElement("h1")
-	_h.append("Stats")
-	doc_div.append(_h)
+	let head = document.createElement("h1")
+	head.append("Sheet")
+	doc.append(head)
 
-	for (let k in sheet) {
-		let i = document.createElement("input")
+	for (let key in sheet) {
 
-		i.id = k
-		i.type = "text"
+		let input = document.createElement("input")
 
-		if (sheet[k].value) {
-			i.value = sheet[k].value
+		if (sheet[key].checkbox) {
+			input.type = "checkbox"
 		} else {
-			i.value = sheet[k].default ? sheet[k].default : 0
+			input.type = "text"
 		}
 
-		doc_div.append(i)
+		input.id = key
 
-		if (sheet[k].label) {
-			let _label = document.createElement("label")
-
-			i.insertAdjacentElement("beforebegin", _label)
-			_label.append(sheet[k].label, i)
+		if (sheet[key].value) {
+			input.value = sheet[key].value
+		} else {
+			input.value = sheet[key].default ? sheet[key].default : 0
 		}
 
-		i.addEventListener("input", eventswitch, { passive: true })
+		doc.append(input)
+
+		if (sheet[key].label) {
+			let label = document.createElement("label")
+
+			input.insertAdjacentElement("beforebegin", label)
+			label.append(sheet[key].label, input, (sheet[key].checkbox ? document.createElement("div") : []))
+		}
+
+		input.addEventListener("input", eventswitch, { passive: true })
 	}
 
-	/* expand elements */
+	/* set vars & add events */
 
 	input_divs = document.querySelectorAll("input")
+
+	document.addEventListener("visibilitychange", eventswitch)
 
 	for (let a of input_divs) {
 		if (a.type == "button") {
@@ -119,121 +188,99 @@ function init() {
 	}
 }
 
-function calc(e) {
-	let attack_speed = 1.5
-	let critical_rating = 500
-	let physical_damage = 154
+function calc() {
+
+	/* input stats */
+
+	let skill_wad = 2.77
+	let weapon_pd = [154, 154]
+	let weapon_as = [1.5, 1.5]
+	let weapon_rating = [500, 500]
 	let critical_damage = 1.5
-	let corrosive_multistrike_chance = 0.2
-	let motionless_add_damage = 1.1
-	let stalker_add_damage = 1 + (0.13 * 3)
-	let dual_wield_attack_speed = 1.1
-	let multistrike_attack_speed = 1.2
-	let critical_rating_bonus = 1 + 2.1
-	let multistrike_damage = 0.27
+	let numbed_effect = 0.18
+	let numbed_stacks = 1.5
 
-	// 20% chance for multistrike attack speed to as - stalker add damage to physical damage - 
+	let dual_wield = true
 
-	/* results */
+	/* output stats */
 
-	results.critical_chance.value = (critical_rating / 10000) * critical_rating_bonus
+	let weapon_pdps = weapon_pd * weapon_as
 
-	results.attack_speed.value = attack_speed * dual_wield_attack_speed
+	let attack_speed
+	let critical_rating
+	let attack_speed_add
 
-	let scale_res_motion = skill.corrosive_throw.scale * invincible.resistance * motionless_add_damage
-	let critical_mod = 1 + (critical_damage * results.critical_chance.value)
-	let multi_mod = 1 + (corrosive_multistrike_chance * multistrike_attack_speed)
+	/* intermediate stats */
 
-	let multi_dmg = physical_damage * scale_res_motion * (1 + 2 * multistrike_damage) * stalker_add_damage
+	let crit_scale
 
-	/*
-	console.log(
-		(physical_damage * stalker_add_damage * scale_res_motion).trim(1),
-		(physical_damage * stalker_add_damage * critical_damage * scale_res_motion).trim(1),
-		attack_speed * dual_wield_attack_speed * multistrike_attack_speed,
-		(physical_damage * scale_res_motion).trim(0),
-		(physical_damage * critical_damage * scale_res_motion).trim(0),
-		multi_dmg,
-		corrosive_multistrike_chance + 1.16,
-	)
-	*/
+	if (dual_wield) {
+		attack_speed_add = 0.1
+		critical_rating = weapon_rating.scale(0.0001)
+		attack_speed = weapon_as.scale(1 + attack_speed_add)
+		
+		crit_scale = critical_rating.scale(critical_damage - 1).add(1)
+	} else {
+		critical_rating = weapon_rating[0] * 0.0001
+		attack_speed = weapon_as[0]
 
-	//318 404 489
+		crit_scale = 1 + critical_rating * (critical_damage - 1)
+	}
 
-	//442 561 680
+	let prenumb = 1 + (numbed_stacks * 0.05 * (1 + numbed_effect))
+	let prenumb2 = 1 + (0.05 * (1 + numbed_effect))
 
-	//damage - physical_damage * scale_res_motion
-	//crit - 'damage' * critical_damage
-	//multistrike damage - 'damage' * stalker_add_damage
+	console.log(weapon_pd[0] * skill_wad * invincible.resistance * prenumb, prenumb)
 
-	//console.log(critical_damage, results.critical_chance.value)
+	/* probability stats */
+
+	let numbed_prob = [[1 + 0.05 * (1 + numbed_effect), 0.5], [1 + 2 * 0.05 * (1 + numbed_effect), 0.5]]
+	let crit_prob = [critical_damage, critical_rating[0]]
+
+	console.log(numbed_prob, crit_prob)
+	
+	/* set results */
+
+	results.attack_speed.value = attack_speed
+	results.attack_speed_add.value = attack_speed_add
+	results.critical_chance.value = critical_rating
+	results.critical_damage.value = critical_damage
+	results.numbed_effect.value = numbed_effect
 }
 
 function calc_draw() {
-	let _h = document.createElement("h1")
+	let head = document.createElement("h1")
 
-	_h.append("Results")
-	doc_div.append(_h)
+	head.append("Results")
+	doc.append(head)
 
-	_h = document.createElement("h2")
-	_h.append("Damage")
-	doc_div.append(_h)
+	/* character info */
 
-	/* ev table */
+	head = document.createElement("h2")
+	head.append("Character Stats")
+	doc.append(head)
 
-	let _head = new Map()
-	_head.set("Hit", "%")
+	let keys = Object.keys(results)
 
-	hit_map.set(1234, 0.15)
-	hit_map.set(694, 0.3)
-	hit_map.set(93, 0.5)
-	hit_map.set(1, 0.05)
+	let group = new Map()
 
-	let _hits = new Map()
-
-	for(let [a, b] of hit_map) {
-		_hits.set(a, `${(b * 100)}%`)
-	}
-
-	let _averages = new Map()
-	_averages.set("Average hit", 420)
-	_averages.set("Attacks / second", 3.3)
-
-	let _dps = new Map()
-	_dps.set("Damage / second", 420.69)
-
-	let flextable_in = [
-		_head,
-		_hits,
-		_averages,
-		_dps,
-	]
-
-	doc_div.append(flextable(flextable_in))
-
-	/* character sheet */
-
-	_h = document.createElement("h2")
-	_h.append("Character Sheet")
-	doc_div.append(_h)
-
-	let _keys = Object.keys(results)
-
-	for (let i = 0; i < _keys.length; i++) {
-		if (results[_keys[i]].figs && results[_keys[i]].value) {
-			if (results[_keys[i]].percent) {
-				doc_div.append(`${results[_keys[i]].name}: ${(results[_keys[i]].value * 100).trim(results[_keys[i]].figs)}%`)
+	for (let i = 0; i < keys.length; i++) {
+		if (results[keys[i]].value) {
+			if (results[keys[i]].value[0]) {
+				for (let ii = 0; ii < results[keys[i]].value.length; ii++) {
+					if (!ii) {
+						group.set(`Main Hand ${results[keys[i]].name}`, `${(results[keys[i]].percent ? (results[keys[i]].value[0] * 100).trim(results[keys[i]].figs) + "%" : results[keys[i]].value[0].trim(results[keys[i]].figs))}`)
+					} else {
+						group.set(`Off Hand ${results[keys[i]].name}`, `${(results[keys[i]].percent ? (results[keys[i]].value[1] * 100).trim(results[keys[i]].figs) + "%" : results[keys[i]].value[1].trim(results[keys[i]].figs))}`)
+					}
+				}
 			} else {
-				doc_div.append(`${results[_keys[i]].name}: ${(results[_keys[i]].value).trim(results[_keys[i]].figs)}`)
+				group.set(results[keys[i]].name, `${(results[keys[i]].percent ? (results[keys[i]].value * 100).trim(results[keys[i]].figs) + "%" : results[keys[i]].value.trim(results[keys[i]].figs))}`)
 			}
-		} else {
-			doc_div.append(`${results[_keys[i]].name}: ${results[_keys[i]].value * 100}`)
-		}
-
-		if (i + 1 != _keys.length) {
-			doc_div.append(document.createElement("br"))
 		}
 	}
+
+	doc.append(flextable([group]))
 }
 
 function flextable(a) {
@@ -316,15 +363,25 @@ function eventswitch(e) {
 					break
 
 				default:
-					console.warn(`event > click > e.target.value: ${e.target.value}`, e)
+					console.warn(`event > click > e.target.type: ${e.target.type}`, e)
 			}
 
 			e.target.blur()
 			break
 
 		case "input":
-			if (validate(e.target)) {
-				sheet[e.target.id].value = e.target.value
+			switch (e.target.type) {
+				case "text":
+					if (validate(e.target)) {
+						sheet[e.target.id].value = e.target.value
+					}
+					break
+
+				case "checkbox":
+					break
+
+				default:
+					console.warn(`event > input > e.target.type: ${e.target.type}`, e)
 			}
 
 			//calc(e.target)
