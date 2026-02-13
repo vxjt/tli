@@ -26,6 +26,8 @@ Doesn't seem to scale with attack speed.
 - Allow inputs to be inline and add line break logic from results
 - Header logic
 - Read more about imports
+- Redo stat bonus calc
+- Show 'Damage Value' stats
 
 # WinGet
 

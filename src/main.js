@@ -1,5 +1,7 @@
 import './magoo.js'
 
+import { prob_combine, compare } from './magoo.js'
+
 var input_divs
 var autosave = true
 
@@ -34,13 +36,30 @@ var sheet = {
 }
 
 var invincible = {
-	resistance: 0.49,
+	resistance: 0.49, //0.49 0.7945
+}
+
+let damage_value = {
+	attack_dps: {
+		name: "Attack DPS"
+	},
+	attack_damage: {
+		name: "Attack Damage"
+	},
 }
 
 var results = {
+	damage: {
+		name: "Damage Bonus",
+		percent: true,
+	},
 	attack_speed: {
 		name: "Attack Speed",
 		figs: 2,
+	},
+	attack_speed_inc: {
+		name: "Attack Speed Bonus",
+		percent: true,
 	},
 	attack_speed_add: {
 		name: "Attack Speed Additional Bonus",
@@ -58,7 +77,14 @@ var results = {
 	numbed_effect: {
 		name: "Numbed Effect",
 		percent: true,
+		figs: 1,
 	},
+}
+
+var hidden_output = {
+	average_hit: 0,
+	dps: 0,
+	hits: [],
 }
 
 /*var skill = {
@@ -197,55 +223,83 @@ function calc() {
 	let weapon_as = [1.5, 1.5]
 	let weapon_rating = [500, 500]
 	let critical_damage = 1.5
-	let numbed_effect = 0.18
-	let numbed_stacks = 1.5
+	let numbed_effect = 0.48
+	let numbed_effect_combat = 0.19 //idk
+	let numbed_stacks = 2
+	let damage = 1.89
+	let attack_speed_inc = 0.29
+	let dexterity = 24
+	let movement = 0.06
 
 	let dual_wield = true
 
-	/* output stats */
+	/* stat 2 */
 
-	let weapon_pdps = weapon_pd * weapon_as
+	let bonus_as = 0.03
+	let bonus_damage = 0.18
+
+	/* output stats */
 
 	let attack_speed
 	let critical_rating
 	let attack_speed_add
+	let out_numbed_effect
 
 	/* intermediate stats */
-
-	let crit_scale
 
 	if (dual_wield) {
 		attack_speed_add = 0.1
 		critical_rating = weapon_rating.scale(0.0001)
-		attack_speed = weapon_as.scale(1 + attack_speed_add)
-		
-		crit_scale = critical_rating.scale(critical_damage - 1).add(1)
+		attack_speed = weapon_as.scale((1 + attack_speed_add) * (1 + attack_speed_inc))
 	} else {
 		critical_rating = weapon_rating[0] * 0.0001
-		attack_speed = weapon_as[0]
-
-		crit_scale = 1 + critical_rating * (critical_damage - 1)
+		attack_speed = weapon_as[0] * (1 + attack_speed_inc)
 	}
 
-	let prenumb = 1 + (numbed_stacks * 0.05 * (1 + numbed_effect))
-	let prenumb2 = 1 + (0.05 * (1 + numbed_effect))
-
-	console.log(weapon_pd[0] * skill_wad * invincible.resistance * prenumb, prenumb)
+	out_numbed_effect = numbed_effect + (movement / 0.01 * 0.004)
 
 	/* probability stats */
 
-	let numbed_prob = [[1 + 0.05 * (1 + numbed_effect), 0.5], [1 + 2 * 0.05 * (1 + numbed_effect), 0.5]]
-	let crit_prob = [critical_damage, critical_rating[0]]
+	let crit_prob = [[critical_damage, critical_rating[0]]]
+	let numbed_prob = [[1 + (numbed_stacks - 1) * 0.05 * (1 + out_numbed_effect + numbed_effect_combat), 0.5], [1 + numbed_stacks * 0.05 * (1 + out_numbed_effect + numbed_effect_combat), 0.5]]
+	let hit_prob = prob_combine(crit_prob, numbed_prob)
+	let hit_flat = weapon_pd[0] * skill_wad * invincible.resistance * (1 + damage) * (1 + dexterity * 0.005)
 
-	console.log(numbed_prob, crit_prob)
-	
 	/* set results */
 
+	results.damage.value = damage
 	results.attack_speed.value = attack_speed
+	results.attack_speed_inc.value = attack_speed_inc
 	results.attack_speed_add.value = attack_speed_add
 	results.critical_chance.value = critical_rating
 	results.critical_damage.value = critical_damage
-	results.numbed_effect.value = numbed_effect
+	results.numbed_effect.value = out_numbed_effect
+
+	damage_value.attack_damage.value = hit_flat
+	damage_value.attack_dps.value = hit_flat * (1 + critical_rating[0] * (critical_damage - 1)) * attack_speed[0]
+
+	/* temp results */
+
+	for (let a = 0; a < hit_prob.length; a++) {
+		hidden_output.hits.push([hit_flat * hit_prob[a][0], hit_prob[a][1]])
+		hidden_output.average_hit += hit_flat * hit_prob[a][0] * hit_prob[a][1]
+	}
+
+	hidden_output.dps = hidden_output.average_hit * results.attack_speed.value[0]
+
+	/* temp compare */
+
+	let output_as = hidden_output.average_hit * weapon_as[0] * (1 + attack_speed_add) * (1 + attack_speed_inc + bonus_as)
+	let output_dmg_avghit = 0
+	let output_dmg
+
+	for (let a = 0; a < hit_prob.length; a++) {
+		output_dmg_avghit += (weapon_pd[0] * skill_wad * invincible.resistance * (1 + damage + bonus_damage)) * hit_prob[a][0] * hit_prob[a][1]
+	}
+
+	output_dmg = output_dmg_avghit * results.attack_speed.value[0]
+
+	console.log(`as: ${output_as.trim()}, dmg: ${output_dmg.trim()}`)
 }
 
 function calc_draw() {
@@ -260,9 +314,19 @@ function calc_draw() {
 	head.append("Character Stats")
 	doc.append(head)
 
-	let keys = Object.keys(results)
+	let attack_group = new Map()
+
+	let keys = Object.keys(damage_value)
+
+	for (let i = 0; i < keys.length; i++) {
+		if (damage_value[keys[i]].value) {
+			attack_group.set(damage_value[keys[i]].name, damage_value[keys[i]].value.trim())
+		}
+	}
 
 	let group = new Map()
+
+	keys = Object.keys(results)
 
 	for (let i = 0; i < keys.length; i++) {
 		if (results[keys[i]].value) {
@@ -280,7 +344,23 @@ function calc_draw() {
 		}
 	}
 
-	doc.append(flextable([group]))
+	doc.append(flextable([attack_group, group]))
+
+	/* hit damage */
+
+	head = document.createElement("h2")
+	head.append("Damage")
+	doc.append(head)
+
+	let sorthit = [...hidden_output.hits].sort((x, y) => y[0] - x[0])
+
+	group = new Map()
+
+	for (let i = 0; i < sorthit.length; i++) {
+		group.set(sorthit[i][0].trim(1), `${(sorthit[i][1] * 100).trim(1)}%`)
+	}
+
+	doc.append(flextable([new Map([["Hit", "%"]]), group, new Map([["Average Hit", hidden_output.average_hit.trim(1)], ["Attack Speed*", results.attack_speed.value[0].trim(2)]]), new Map([["Damage / second", hidden_output.dps.trim(1)]])]))
 }
 
 function flextable(a) {
