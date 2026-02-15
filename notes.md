@@ -13,8 +13,6 @@ Numbed increases lightning damage by 5% per stack for 2s.
 New stacks seem to only come from unique sources.
 
 Thunder Strike seems to alternate between 1 and 2 base stacks from the 1 stack/s from shadows.  The stack is refreshed when the next hit happens after the 1s cooldown.
-The effect is 1 / 2 / 1 / 2.. 
-Doesn't seem to scale with attack speed.
 
 # Future
 
@@ -28,6 +26,7 @@ Doesn't seem to scale with attack speed.
 - Read more about imports
 - Redo stat bonus calc
 - Show 'Damage Value' stats
+- Trim revamp based on numbers visible
 
 # WinGet
 

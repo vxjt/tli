@@ -6,6 +6,8 @@ Array.prototype.add = function (n = 0) {
 	return a
 }
 
+/* breaks with [1.5].scale(1.276)*/
+
 Array.prototype.scale = function (n = 1) {
 	let a = []
 	for (let x of this) {
@@ -13,6 +15,8 @@ Array.prototype.scale = function (n = 1) {
 	}
 	return a
 }
+
+/* breaks with output of [1.5].scale(1.276) */
 
 Number.prototype.trim = function (n = 0) {
 	return Math.trunc(this) + Math.round(this % 1 * 10 ** n) / 10 ** n
@@ -28,7 +32,8 @@ export function compare(a, b) {
 	if (a.length != b.length) {
 		msg += `not the same length\n`
 	}
-
+	
+	//dont need to sort, running total
 	let sorta = [...a].sort((x, y) => x[0] - y[0])
 	let sortb = [...b].sort((x, y) => x[0] - y[0])
 

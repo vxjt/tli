@@ -36,7 +36,7 @@ var sheet = {
 }
 
 var invincible = {
-	resistance: 0.49, //0.49 0.7945
+	resistance: 0.49, //0.492 0.7945
 }
 
 let damage_value = {
@@ -49,8 +49,15 @@ let damage_value = {
 }
 
 var results = {
+	dexterity: {
+		name: "Dexterity"
+	},
 	damage: {
 		name: "Damage Bonus",
+		percent: true,
+	},
+	lightning_damage: {
+		name: "Lightning Damage Bonus",
 		percent: true,
 	},
 	attack_speed: {
@@ -70,6 +77,10 @@ var results = {
 		figs: 2,
 		percent: true,
 	},
+	critical_chance_bonus: {
+		name: "Attack Critical Strike",
+		percent: true,
+	},
 	critical_damage: {
 		name: "Attack Critical Strike Damage",
 		percent: true,
@@ -78,6 +89,10 @@ var results = {
 		name: "Numbed Effect",
 		percent: true,
 		figs: 1,
+	},
+	movement_speed: {
+		name: "Movement Speed Bonus",
+		percent: true,
 	},
 }
 
@@ -218,88 +233,105 @@ function calc() {
 
 	/* input stats */
 
-	let skill_wad = 2.77
-	let weapon_pd = [154, 154]
-	let weapon_as = [1.5, 1.5]
-	let weapon_rating = [500, 500]
+	let additional_damage = [0.07, 0.04, 0.02, 0.05, 0.05, 0.04]
+	let attack_critical_rating = 0.4 + 1.76
+	let attack_damage = 1.24
+	let attack_speed_inc = 0.29 + 0.24 + 0.08 + 0.18
 	let critical_damage = 1.5
-	let numbed_effect = 0.48
-	let numbed_effect_combat = 0.19 //idk
+	let damage = 0.84 + 0.24 + 0.27 + 0.54 + 1.44
+	let dexterity = 0
+	let lightning_damage = 0.28
+	let movement = 0.06 + 0.12
+	let numbed_effect = 0.18 + 0.25
+	let numbed_effect_combat = 0.3 //idk
 	let numbed_stacks = 2
-	let damage = 1.89
-	let attack_speed_inc = 0.29
-	let dexterity = 24
-	let movement = 0.06
+	let skill_wad = 2.77
+	let weapon_as = [1.5, 1.5]
+	let weapon_pd = [154, 154]
+	let weapon_rating = [500, 500]
 
+	let additional_damage_combat = 0.03
 	let dual_wield = true
-
-	/* stat 2 */
-
-	let bonus_as = 0.03
-	let bonus_damage = 0.18
+	
 
 	/* output stats */
 
+	let additional_damage_bonus = 1
 	let attack_speed
-	let critical_rating
 	let attack_speed_add
+	let crit_prob
+	let damage_bonus = 0
+	let hit_flat
+	let hit_prob
+	let hit_temp
+	let numbed_hit_prob
+	let numbed_prob
 	let out_numbed_effect
+	let total_critical_rating
 
 	/* intermediate stats */
 
 	if (dual_wield) {
 		attack_speed_add = 0.1
-		critical_rating = weapon_rating.scale(0.0001)
+		total_critical_rating = weapon_rating.scale(0.0001 * (1 + attack_critical_rating))
 		attack_speed = weapon_as.scale((1 + attack_speed_add) * (1 + attack_speed_inc))
 	} else {
-		critical_rating = weapon_rating[0] * 0.0001
+		total_critical_rating = weapon_rating[0] * 0.0001 * (1 + attack_critical_rating)
 		attack_speed = weapon_as[0] * (1 + attack_speed_inc)
 	}
 
-	out_numbed_effect = numbed_effect + (movement / 0.01 * 0.004)
+	out_numbed_effect = 0.05 + numbed_effect + (movement / 0.01 * 0.004)
 
-	/* probability stats */
+	damage_bonus = damage + attack_damage
 
-	let crit_prob = [[critical_damage, critical_rating[0]]]
-	let numbed_prob = [[1 + (numbed_stacks - 1) * 0.05 * (1 + out_numbed_effect + numbed_effect_combat), 0.5], [1 + numbed_stacks * 0.05 * (1 + out_numbed_effect + numbed_effect_combat), 0.5]]
-	let hit_prob = prob_combine(crit_prob, numbed_prob)
-	let hit_flat = weapon_pd[0] * skill_wad * invincible.resistance * (1 + damage) * (1 + dexterity * 0.005)
+	for (let a = 0; a < additional_damage.length; a++) {
+		additional_damage_bonus = additional_damage_bonus * (1 + additional_damage[a])
+	}
 
-	/* set results */
+	crit_prob = [[critical_damage, total_critical_rating[0]]]
 
-	results.damage.value = damage
+	/*
+	numbed hit prob values
+	as, stack, prob
+	1.5, 1 2, 1 / 2
+	2.52 - 2.66, 1 2 2, 2 / 3
+	*/
+
+	numbed_hit_prob = 2 / 3 //idk
+
+	numbed_prob = [[1 + (numbed_stacks - 1) * 0.05 * (1 + out_numbed_effect + numbed_effect_combat), (1 - numbed_hit_prob)], [1 + numbed_stacks * 0.05 * (1 + out_numbed_effect + numbed_effect_combat), numbed_hit_prob]]
+
+	hit_prob = prob_combine(crit_prob, numbed_prob)
+
+	hit_flat = weapon_pd[0] * skill_wad * invincible.resistance * (1 + damage_bonus + lightning_damage) * (1 + dexterity * 0.005) * additional_damage_bonus
+	
+	hit_temp = weapon_pd[0] * skill_wad * invincible.resistance * (1 + damage_bonus + lightning_damage) * (1 + dexterity * 0.005) * additional_damage_bonus * (1 + additional_damage_combat)
+	
+	/* character results */
+
+	results.dexterity.value = dexterity
+	results.damage.value = damage_bonus
+	results.lightning_damage.value = lightning_damage
 	results.attack_speed.value = attack_speed
 	results.attack_speed_inc.value = attack_speed_inc
 	results.attack_speed_add.value = attack_speed_add
-	results.critical_chance.value = critical_rating
+	results.critical_chance.value = total_critical_rating
+	results.critical_chance_bonus.value = attack_critical_rating
 	results.critical_damage.value = critical_damage
 	results.numbed_effect.value = out_numbed_effect
+	results.movement_speed.value = movement
 
 	damage_value.attack_damage.value = hit_flat
-	damage_value.attack_dps.value = hit_flat * (1 + critical_rating[0] * (critical_damage - 1)) * attack_speed[0]
+	damage_value.attack_dps.value = hit_flat * (1 + total_critical_rating[0] * (critical_damage - 1)) * attack_speed[0]
 
-	/* temp results */
+	/* damage results */
 
 	for (let a = 0; a < hit_prob.length; a++) {
-		hidden_output.hits.push([hit_flat * hit_prob[a][0], hit_prob[a][1]])
-		hidden_output.average_hit += hit_flat * hit_prob[a][0] * hit_prob[a][1]
+		hidden_output.hits.push([hit_temp * hit_prob[a][0], hit_prob[a][1]])
+		hidden_output.average_hit += hit_temp * hit_prob[a][0] * hit_prob[a][1]
 	}
 
 	hidden_output.dps = hidden_output.average_hit * results.attack_speed.value[0]
-
-	/* temp compare */
-
-	let output_as = hidden_output.average_hit * weapon_as[0] * (1 + attack_speed_add) * (1 + attack_speed_inc + bonus_as)
-	let output_dmg_avghit = 0
-	let output_dmg
-
-	for (let a = 0; a < hit_prob.length; a++) {
-		output_dmg_avghit += (weapon_pd[0] * skill_wad * invincible.resistance * (1 + damage + bonus_damage)) * hit_prob[a][0] * hit_prob[a][1]
-	}
-
-	output_dmg = output_dmg_avghit * results.attack_speed.value[0]
-
-	console.log(`as: ${output_as.trim()}, dmg: ${output_dmg.trim()}`)
 }
 
 function calc_draw() {
@@ -360,57 +392,57 @@ function calc_draw() {
 		group.set(sorthit[i][0].trim(1), `${(sorthit[i][1] * 100).trim(1)}%`)
 	}
 
-	doc.append(flextable([new Map([["Hit", "%"]]), group, new Map([["Average Hit", hidden_output.average_hit.trim(1)], ["Attack Speed*", results.attack_speed.value[0].trim(2)]]), new Map([["Damage / second", hidden_output.dps.trim(1)]])]))
+	doc.append(flextable([new Map([["Hit", "%"]]), group, new Map([["Average Hit", hidden_output.average_hit.trim(1)], ["Attack Speed", results.attack_speed.value[0].trim(2)]]), new Map([["Damage / second", hidden_output.dps.trim(1)]])]))
 }
 
 function flextable(a) {
-	let _flex = document.createElement("div")
-	_flex.classList.add("flex", "column")
+	let flex = document.createElement("div")
+	flex.classList.add("flex", "column")
 
-	let _flexsoliditem
-	let _flexitem
-	let _div
+	let flexsoliditem
+	let flexitem
+	let div
 
-	let _i = 0
+	let i = 0
 
 	for (let m of a) {
-		let _ii = 0
+		let ii = 0
 
 		for (let [x, y] of m) {
-			if (_ii + 1 == m.size && _i + 1 < a.length) {
-				_flexsoliditem = document.createElement("div")
-				_flexsoliditem.classList.add("flex", "space-between", "solid")
+			if (ii + 1 == m.size && i + 1 < a.length) {
+				flexsoliditem = document.createElement("div")
+				flexsoliditem.classList.add("flex", "space-between", "solid")
 
-				_div = document.createElement("div")
-				_div.append(x)
-				_flexsoliditem.append(_div)
+				div = document.createElement("div")
+				div.append(x)
+				flexsoliditem.append(div)
 
-				_div = document.createElement("div")
-				_div.append(y)
-				_flexsoliditem.append(_div)
+				div = document.createElement("div")
+				div.append(y)
+				flexsoliditem.append(div)
 
-				_flex.append(_flexsoliditem)
+				flex.append(flexsoliditem)
 			} else {
-				_flexitem = document.createElement("div")
-				_flexitem.classList.add("flex", "space-between")
+				flexitem = document.createElement("div")
+				flexitem.classList.add("flex", "space-between")
 
-				_div = document.createElement("div")
-				_div.append(x)
-				_flexitem.append(_div)
+				div = document.createElement("div")
+				div.append(x)
+				flexitem.append(div)
 
-				_div = document.createElement("div")
-				_div.append(y)
-				_flexitem.append(_div)
+				div = document.createElement("div")
+				div.append(y)
+				flexitem.append(div)
 
-				_flex.append(_flexitem)
+				flex.append(flexitem)
 
-				_ii++
+				ii++
 			}
 		}
 
-		_i++
+		i++
 	}
-	return _flex
+	return flex
 }
 
 function validate(i) {
