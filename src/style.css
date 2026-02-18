@@ -1,6 +1,7 @@
 :root {
 	--color-a: #111111;
 	--color-b: #dddddd;
+	--list-width: 20rch;
 	font-size: medium;
 	font-family: system-ui;
 }
@@ -82,13 +83,7 @@ input[type="checkbox"]:checked+div {
 }
 
 input[type="text"] {
-	border-width: 0 0 0.1rem 0;
-	border-style: solid;
-	border-color: var(--color-b);
-	width: 10rch;
-	text-align: end;
 	font-size: 1rem;
-	margin-left: 2rch;
 }
 
 label {
@@ -100,8 +95,25 @@ label {
 	flex-direction: column;
 }
 
+.end {
+	text-align: end;
+}
+
 .flex {
 	display: inline-flex;
+}
+
+.input-text {
+	width: 10rch;
+	margin-left: 2rch;
+}
+
+.mr4 {
+	margin-right: 4rch;
+}
+
+.none {
+	border-style: none;
 }
 
 .solid {
@@ -114,6 +126,27 @@ label {
 	justify-content: space-between;
 }
 
-.space-between>div:first-child {
-	margin-right: 4rch;
+.list {
+	width: var(--list-width);
+}
+
+.cursor-text {
+	cursor: text;
+}
+
+.min-width-0 {
+	min-width: 0;
+}
+
+.listlist {
+	white-space-collapse: preserve-breaks;
+	outline-width: 0.1rem;
+	outline-style: solid;
+	outline-color: var(--color-b);
+	width: calc(var(--list-width) - 1rch);
+	padding-left: 1rch;
+}
+
+.margin-left-1 {
+	margin-left: 1rch;
 }

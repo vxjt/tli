@@ -1,42 +1,87 @@
 import './magoo.js'
 
-import { prob_combine, compare } from './magoo.js'
+import { prob_combine, inde_combine } from './magoo.js'
 
 var input_divs
-var autosave = true
+var autosave = false // change
+
+var data = {
+	invincible: {
+		resistance: 0.49, //0.492 0.7945
+	},
+	skill: {
+		thunder_spike: {
+			name: "Thunder Spike",
+			scale: 2.77,
+			tags: ["attack", "lightning", "area", "melee", "shadow", "dexterity"],
+			conversion: [{
+				from: "physical",
+				to: "lightning",
+				rate: 1,
+			}],
+			cost: 5,
+		},
+		leap_attack: {
+			name: "Leap Spike",
+			scale: 2.77,
+			tags: ["attack", "lightning", "area", "melee", "shadow", "dexterity"],
+			conversion: [{
+				from: "physical",
+				to: "lightning",
+				rate: 1,
+			}],
+			cost: 5,
+		},
+		blink_attack: {
+			name: "Blink Spike",
+			scale: 2.77,
+			tags: ["attack", "lightning", "area", "melee", "shadow", "dexterity"],
+			conversion: [{
+				from: "physical",
+				to: "lightning",
+				rate: 1,
+			}],
+			cost: 5,
+		},
+	},
+}
 
 var sheet = {
+	skilltemp: {
+		type: "list",
+	},
 	dexterity: {
 		label: "Dexterity",
 		min: 0,
+		type: "text",
 	},
 	enemy_accuracy: {
 		label: "Enemy Accuracy",
 		min: 130,
 		max: 680,
 		default: 680,
+		type: "text",
 	},
 	damage: {
 		label: "Damage",
 		min: 0,
 		variants: ["physical", "lightning"],
+		type: "text",
 	},
 	critical_strike_rating: {
 		label: "Critical Strike Rating",
 		min: 0,
+		type: "text",
 	},
 	attack_speed: {
 		label: "Attack Speed",
 		min: 0,
+		type: "text",
 	},
 	dual_wield: {
 		label: "Dual Wield",
-		checkbox: true,
+		type: "check",
 	},
-}
-
-var invincible = {
-	resistance: 0.49, //0.492 0.7945
 }
 
 let damage_value = {
@@ -102,21 +147,7 @@ var hidden_output = {
 	hits: [],
 }
 
-/*var skill = {
-	corrosive_throw: {
-		name: "Corrosive Throw",
-		scale: 3.83,
-		tags: ["dexterity", "erosion"],
-		cost: 5,
-	},
-	lightning_attack: {
-		name: "Lightning Attack",
-		scale: 3.33,
-		tags: ["dexterity", "lightning"],
-		cost: 5,
-	}
-}
-
+/*
 var mans = {
 	green_mans: {
 		name: "Green",
@@ -180,7 +211,7 @@ function init() {
 		}
 	}
 
-	/* place input elements */
+	/* draw input elements */
 
 	let head = document.createElement("h1")
 	head.append("Sheet")
@@ -190,10 +221,19 @@ function init() {
 
 		let input = document.createElement("input")
 
-		if (sheet[key].checkbox) {
-			input.type = "checkbox"
-		} else {
-			input.type = "text"
+		switch (sheet[key].type) {
+			case "text":
+				input.type = "text"
+				input.className = "solid input-text end"
+				break
+			case "check":
+				input.type = "checkbox"
+				break
+			case "list":
+				console.log(sheet)
+				break
+			default:
+				console.log(sheet[key])
 		}
 
 		input.id = key
@@ -210,7 +250,7 @@ function init() {
 			let label = document.createElement("label")
 
 			input.insertAdjacentElement("beforebegin", label)
-			label.append(sheet[key].label, input, (sheet[key].checkbox ? document.createElement("div") : []))
+			label.append(sheet[key].label, input, (sheet[key].type == "check" ? document.createElement("div") : []))
 		}
 
 		input.addEventListener("input", eventswitch, { passive: true })
@@ -227,39 +267,54 @@ function init() {
 			a.addEventListener("click", eventswitch, { passive: true })
 		}
 	}
+
+	//temp for list design
+	document.querySelector("#testa").addEventListener("click", eventswitch, { passive: true })
+	document.querySelector("#skill").addEventListener("input", eventswitch, { passive: true })
+	//document.querySelector("#skill").addEventListener("click", eventswitch, {passive: true})
 }
 
 function calc() {
 
 	/* input stats */
 
-	let additional_damage = [0.07, 0.04, 0.02, 0.05, 0.05, 0.04]
-	let attack_critical_rating = 0.4 + 1.76
-	let attack_damage = 1.24
-	let attack_speed_inc = 0.29 + 0.24 + 0.08 + 0.18
+	let additional_damage
+	let attack_critical
+	let attack_damage
+	let attack_speed_inc
 	let critical_damage = 1.5
-	let damage = 0.84 + 0.24 + 0.27 + 0.54 + 1.44
-	let dexterity = 0
-	let lightning_damage = 0.28
-	let movement = 0.06 + 0.12
-	let numbed_effect = 0.18 + 0.25
-	let numbed_effect_combat = 0.3 //idk
-	let numbed_stacks = 2
+	let damage
+	let dexterity
+	let gear_attack_speed
+	let gear_critical
+	let gear_physical
+	let lightning_damage
+	let movement
+	let numbed_effect = 0.18
 	let skill_wad = 2.77
-	let weapon_as = [1.5, 1.5]
-	let weapon_pd = [154, 154]
-	let weapon_rating = [500, 500]
+	let weapon_attack_speed = [1.5, 1.5]
+	let weapon_critical = [500, 500]
+	let weapon_physical = [154, 154]
 
-	let additional_damage_combat = 0.03
-	let dual_wield = true
-	
+	let additional_damage_combat
+	let numbed_effect_combat//idk
+	let numbed_stacks = 2
+
+	let gear_lightning = [[1, 20], [3, 53]]
+	let melee_damage = 0.51 + 0.59
+	let elemental_damage = 0.56 + 0.41
+	let physical_damage = 0.46
 
 	/* output stats */
 
+	let temp_weapon_physical = []
+	let temp_weapon_attack_speed = []
+	let temp_weapon_critical = []	//critical of each weapon
+
+	let temp_critical_p = []		//critical of each weapon as a probability event group
+
 	let additional_damage_bonus = 1
-	let attack_speed
 	let attack_speed_add
-	let crit_prob
 	let damage_bonus = 0
 	let hit_flat
 	let hit_prob
@@ -267,18 +322,26 @@ function calc() {
 	let numbed_hit_prob
 	let numbed_prob
 	let out_numbed_effect
-	let total_critical_rating
+
+	/* validate stats */
+
+	if (additional_damage === undefined) {
+		additional_damage = []
+	}
+
+	if (gear_physical === undefined) {
+		gear_physical = [0, 0]
+	}
+
+	if (gear_attack_speed === undefined) {
+		gear_attack_speed = [0, 0]
+	}
+
+	if (gear_critical === undefined) {
+		gear_critical = [0, 0]
+	}
 
 	/* intermediate stats */
-
-	if (dual_wield) {
-		attack_speed_add = 0.1
-		total_critical_rating = weapon_rating.scale(0.0001 * (1 + attack_critical_rating))
-		attack_speed = weapon_as.scale((1 + attack_speed_add) * (1 + attack_speed_inc))
-	} else {
-		total_critical_rating = weapon_rating[0] * 0.0001 * (1 + attack_critical_rating)
-		attack_speed = weapon_as[0] * (1 + attack_speed_inc)
-	}
 
 	out_numbed_effect = 0.05 + numbed_effect + (movement / 0.01 * 0.004)
 
@@ -288,7 +351,24 @@ function calc() {
 		additional_damage_bonus = additional_damage_bonus * (1 + additional_damage[a])
 	}
 
-	crit_prob = [[critical_damage, total_critical_rating[0]]]
+	/* weapon base physical damage, attack speed, critical */
+
+
+
+	for (let a = 0; a < 2; a++) {
+		let group = []
+
+		temp_weapon_physical[a] = 0.5 * (gear_physical[a][0] + gear_physical[a][1]) + weapon_physical[a]
+		temp_weapon_attack_speed[a] = weapon_attack_speed[a] * (gear_attack_speed[a] + 1)
+		temp_weapon_critical[a] = Math.min(1, weapon_critical[a] * (gear_critical[a] + 1) * (attack_critical + 1) * 0.0001)
+		group.push([critical_damage, temp_weapon_critical[a]])
+
+		if (temp_weapon_critical[a] < 1) {
+			group.push([1, (1 - temp_weapon_critical[a])])
+		}
+
+		temp_critical_p.push(group)
+	}
 
 	/*
 	numbed hit prob values
@@ -301,28 +381,27 @@ function calc() {
 
 	numbed_prob = [[1 + (numbed_stacks - 1) * 0.05 * (1 + out_numbed_effect + numbed_effect_combat), (1 - numbed_hit_prob)], [1 + numbed_stacks * 0.05 * (1 + out_numbed_effect + numbed_effect_combat), numbed_hit_prob]]
 
-	hit_prob = prob_combine(crit_prob, numbed_prob)
+	hit_prob = prob_combine(inde_combine(...temp_critical_p), numbed_prob)
 
-	hit_flat = weapon_pd[0] * skill_wad * invincible.resistance * (1 + damage_bonus + lightning_damage) * (1 + dexterity * 0.005) * additional_damage_bonus
-	
-	hit_temp = weapon_pd[0] * skill_wad * invincible.resistance * (1 + damage_bonus + lightning_damage) * (1 + dexterity * 0.005) * additional_damage_bonus * (1 + additional_damage_combat)
-	
+	hit_flat = weapon_physical[0] * skill_wad * data.invincible.resistance * (1 + damage_bonus + lightning_damage) * (1 + dexterity * 0.005) * additional_damage_bonus
+
+	hit_temp = weapon_physical[0] * skill_wad * data.invincible.resistance * (1 + damage_bonus + lightning_damage) * (1 + dexterity * 0.005) * additional_damage_bonus * (1 + additional_damage_combat)
+
 	/* character results */
 
 	results.dexterity.value = dexterity
 	results.damage.value = damage_bonus
 	results.lightning_damage.value = lightning_damage
-	results.attack_speed.value = attack_speed
+	results.attack_speed.value = temp_weapon_attack_speed
 	results.attack_speed_inc.value = attack_speed_inc
 	results.attack_speed_add.value = attack_speed_add
-	results.critical_chance.value = total_critical_rating
-	results.critical_chance_bonus.value = attack_critical_rating
+	results.critical_chance.value = temp_weapon_critical
+	results.critical_chance_bonus.value = attack_critical
 	results.critical_damage.value = critical_damage
 	results.numbed_effect.value = out_numbed_effect
 	results.movement_speed.value = movement
 
 	damage_value.attack_damage.value = hit_flat
-	damage_value.attack_dps.value = hit_flat * (1 + total_critical_rating[0] * (critical_damage - 1)) * attack_speed[0]
 
 	/* damage results */
 
@@ -397,7 +476,7 @@ function calc_draw() {
 
 function flextable(a) {
 	let flex = document.createElement("div")
-	flex.classList.add("flex", "column")
+	flex.className = "flex column"
 
 	let flexsoliditem
 	let flexitem
@@ -411,9 +490,10 @@ function flextable(a) {
 		for (let [x, y] of m) {
 			if (ii + 1 == m.size && i + 1 < a.length) {
 				flexsoliditem = document.createElement("div")
-				flexsoliditem.classList.add("flex", "space-between", "solid")
+				flexsoliditem.className = "flex space-between solid"
 
 				div = document.createElement("div")
+				div.className = "mr4"
 				div.append(x)
 				flexsoliditem.append(div)
 
@@ -424,9 +504,10 @@ function flextable(a) {
 				flex.append(flexsoliditem)
 			} else {
 				flexitem = document.createElement("div")
-				flexitem.classList.add("flex", "space-between")
+				flexitem.className = "flex space-between"
 
 				div = document.createElement("div")
+				div.className = "mr4"
 				div.append(x)
 				flexitem.append(div)
 
@@ -461,6 +542,7 @@ function validate(i) {
 function eventswitch(e) {
 	switch (e.type) {
 		case "click":
+			console.log('click', e)
 			switch (e.target.type) {
 				case "button":
 					for (let a of input_divs) {
@@ -472,19 +554,22 @@ function eventswitch(e) {
 					autosave = false
 
 					localStorage.clear()
+					e.target.blur()
+
 					break
 
 				default:
 					console.warn(`event > click > e.target.type: ${e.target.type}`, e)
 			}
 
-			e.target.blur()
 			break
 
 		case "input":
+			console.log('hey')
 			switch (e.target.type) {
 				case "text":
-					if (validate(e.target)) {
+					console.log('wat')
+					if (sheet[e.target.id] && validate(e.target)) {
 						sheet[e.target.id].value = e.target.value
 					}
 					break
@@ -509,3 +594,22 @@ function eventswitch(e) {
 			console.warn(`event > e.type: ${e.type}`, e)
 	}
 }
+
+/*
+have array of string values
+	each array create sub array of each word
+	["brown cow", "green apple", "blue toad"]
+	>
+	[["brown", "cow"], ["green", "apple"], ["blue", "toad"]]
+on text
+for each item in array of strings,
+	character match
+	build list of results
+return results
+
+matched text should be inverted, span class a & b
+
+clicking a result fills that result
+
+tab and right arrow finish the top result
+*/

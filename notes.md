@@ -27,8 +27,16 @@ Thunder Strike seems to alternate between 1 and 2 base stacks from the 1 stack/s
 - Redo stat bonus calc
 - Show 'Damage Value' stats
 - Trim revamp based on numbers visible
+- Format functions
+- Redo input drawing ~215, checkbox
+- Redo flextable
+- Fix clear data
 
-# WinGet
+# Maybe
+
+- List ... & button highlight
+
+# Packages
 
 Git.Git
 OpenJS.NodeJS

@@ -32,7 +32,7 @@ export function compare(a, b) {
 	if (a.length != b.length) {
 		msg += `not the same length\n`
 	}
-	
+
 	//dont need to sort, running total
 	let sorta = [...a].sort((x, y) => x[0] - y[0])
 	let sortb = [...b].sort((x, y) => x[0] - y[0])
@@ -98,4 +98,21 @@ export function prob_combine(...m) {
 	}
 
 	return output_array
+}
+
+export function inde_combine(...m) {
+	let obj = {}
+	let array = []
+
+	for (let a = 0; a < m.length; a++) {
+		for (let b = 0; b < m[a].length; b++) {
+			obj[m[a][b][0]] = (obj[m[a][b][0]] || 0) + m[a][b][1] / m.length
+		}
+	}
+
+	for (let [k, v] of Object.entries(obj)) {
+		array.push([Number(k), v])
+	}
+
+	return array
 }
