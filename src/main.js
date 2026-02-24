@@ -1,6 +1,6 @@
 import './magoo.js'
 
-import { prob_combine, inde_combine } from './magoo.js'
+import { prob_combine, inde_combine, gr_note } from './magoo.js'
 
 var input_divs
 var autosave = false // change
@@ -47,8 +47,11 @@ var data = {
 }
 
 var sheet = {
-	skilltemp: {
+	skill: {
+		label: "Skill",
 		type: "list",
+		items: {},
+		default: "",
 	},
 	dexterity: {
 		label: "Dexterity",
@@ -211,50 +214,56 @@ function init() {
 		}
 	}
 
-	/* draw input elements */
+	/* generate sheet list items */
 
-	let head = document.createElement("h1")
-	head.append("Sheet")
-	doc.append(head)
+	for (let a in data.skill) {
+		sheet.skill.items[a] = data.skill[a].name
+	}
+
+	/* draw input elements */
+	
+	let output_string = `<h1>Sheet</h1>`
 
 	for (let key in sheet) {
-
-		let input = document.createElement("input")
+		let type_string = ``
+		let class_string = ``
+		let post_string = ``
 
 		switch (sheet[key].type) {
 			case "text":
-				input.type = "text"
-				input.className = "solid input-text end"
+				class_string = `class="solid input-text end"`
+				type_string = `text`
 				break
-			case "check":
-				input.type = "checkbox"
-				break
+
 			case "list":
-				console.log(sheet)
+				class_string = `class="solid input-list"`
+				post_string = `<div class="none">`
+				for (let a of Object.values(sheet[key].items)) {
+					post_string += `<div>${a}</div>`
+				}
+				post_string += `</div></div>`
+				type_string = `text`
 				break
+
+			case "check":
+				post_string = `<div></div>`
+				type_string = `checkbox`
+				break
+
 			default:
-				console.log(sheet[key])
+				console.warn(`init > sheet[key].type: ${sheet[key].type}`, sheet)
 		}
 
-		input.id = key
-
-		if (sheet[key].value) {
-			input.value = sheet[key].value
-		} else {
-			input.value = sheet[key].default ? sheet[key].default : 0
-		}
-
-		doc.append(input)
-
-		if (sheet[key].label) {
-			let label = document.createElement("label")
-
-			input.insertAdjacentElement("beforebegin", label)
-			label.append(sheet[key].label, input, (sheet[key].type == "check" ? document.createElement("div") : []))
-		}
-
-		input.addEventListener("input", eventswitch, { passive: true })
+		output_string += `
+		${(sheet[key].label ? `<label>${sheet[key].label}` : ``)}
+		${(sheet[key].type == "list" ? `<div class="inline-block relative">` : ``)}
+		<input id="${key}" type="${type_string}" ${class_string}> ${post_string}
+		${(sheet[key].label ? `</label>` : ``)}`
 	}
+
+	output_string = output_string.replace(/[^\S ]+| +(?=>)|(?<=>) +/g, '').trim()
+
+	doc.append(document.createRange().createContextualFragment(output_string))
 
 	/* set vars & add events */
 
@@ -267,11 +276,6 @@ function init() {
 			a.addEventListener("click", eventswitch, { passive: true })
 		}
 	}
-
-	//temp for list design
-	document.querySelector("#testa").addEventListener("click", eventswitch, { passive: true })
-	document.querySelector("#skill").addEventListener("input", eventswitch, { passive: true })
-	//document.querySelector("#skill").addEventListener("click", eventswitch, {passive: true})
 }
 
 function calc() {
@@ -352,8 +356,6 @@ function calc() {
 	}
 
 	/* weapon base physical damage, attack speed, critical */
-
-
 
 	for (let a = 0; a < 2; a++) {
 		let group = []
@@ -594,22 +596,3 @@ function eventswitch(e) {
 			console.warn(`event > e.type: ${e.type}`, e)
 	}
 }
-
-/*
-have array of string values
-	each array create sub array of each word
-	["brown cow", "green apple", "blue toad"]
-	>
-	[["brown", "cow"], ["green", "apple"], ["blue", "toad"]]
-on text
-for each item in array of strings,
-	character match
-	build list of results
-return results
-
-matched text should be inverted, span class a & b
-
-clicking a result fills that result
-
-tab and right arrow finish the top result
-*/

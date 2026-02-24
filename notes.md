@@ -28,13 +28,45 @@ Thunder Strike seems to alternate between 1 and 2 base stacks from the 1 stack/s
 - Show 'Damage Value' stats
 - Trim revamp based on numbers visible
 - Format functions
-- Redo input drawing ~215, checkbox
 - Redo flextable
 - Fix clear data
+- Saving needs to only save values
+- Buttons need to be taller
 
 # Maybe
 
 - List ... & button highlight
+- label and name are similar variables
+
+# Text Input
+
+should look more like the number input
+
+have array of string values
+	each array create sub array of each word
+	["brown cow", "green apple", "blue toad"]
+	>
+	[["brown", "cow"], ["green", "apple"], ["blue", "toad"]]
+on text
+for each item in array of strings,
+	character match
+	build list of results
+return results
+
+matched text should be inverted, span class a & b
+
+clicking a result fills that result
+
+tab and right arrow finish the top result
+
+Input
+    Number
+        align right
+    Text
+        align left
+        list of values
+
+\<Label> \<space> \<Field, number/text>
 
 # Packages
 

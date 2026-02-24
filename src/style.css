@@ -1,9 +1,10 @@
 :root {
 	--color-a: #111111;
 	--color-b: #dddddd;
-	--list-width: 20rch;
-	font-size: medium;
+	--in-width-a: 10rch;
+	--in-width-b: 16rch;
 	font-family: system-ui;
+	font-size: medium;
 }
 
 ::selection {
@@ -14,8 +15,8 @@
 body {
 	background-color: var(--color-a);
 	color: var(--color-b);
-	margin: 2rem 4rch 1rem 4rch;
 	line-height: 1.6;
+	margin: 2rem 4rch 1rem 4rch;
 }
 
 h1 {
@@ -45,8 +46,8 @@ input:invalid {
 input[type="button"] {
 	border: 0.1rem solid var(--color-b);
 	font-family: system-ui;
-	width: 12rch;
 	font-size: 1rem;
+	width: var(--in-width-b);
 }
 
 input[type="button"]:active {
@@ -84,6 +85,9 @@ input[type="checkbox"]:checked+div {
 
 input[type="text"] {
 	font-size: 1rem;
+	margin-left: 2rch;
+	padding-left: 1rch;
+	padding-right: 1rch;
 }
 
 label {
@@ -103,9 +107,8 @@ label {
 	display: inline-flex;
 }
 
-.input-text {
-	width: 10rch;
-	margin-left: 2rch;
+.inline-block {
+	display: inline-block;
 }
 
 .mr4 {
@@ -113,40 +116,39 @@ label {
 }
 
 .none {
-	border-style: none;
+	display: none;
 }
 
-.solid {
-	border-width: 0 0 0.1rem 0;
-	border-style: solid;
-	border-color: var(--color-b);
+.relative {
+	position: relative;
 }
 
 .space-between {
 	justify-content: space-between;
 }
 
-.list {
-	width: var(--list-width);
+.input-text {
+	width: calc(var(--in-width-a) - 2rch);
 }
 
-.cursor-text {
-	cursor: text;
+.solid {
+	border-color: var(--color-b);
+	border-style: solid;
+	border-width: 0 0 0.1rem 0;
 }
 
-.min-width-0 {
-	min-width: 0;
+.input-list {
+	width: calc(var(--in-width-b) - 2rch);
 }
 
-.listlist {
-	white-space-collapse: preserve-breaks;
-	outline-width: 0.1rem;
-	outline-style: solid;
+.input-list + div {
+	background-color: var(--color-a);
+	left: calc(2rch + 0.05rem);
 	outline-color: var(--color-b);
-	width: calc(var(--list-width) - 1rch);
+	outline-style: solid;
+	outline-width: 0.1rem;
 	padding-left: 1rch;
-}
-
-.margin-left-1 {
-	margin-left: 1rch;
+	position: absolute;
+	top: calc(100% - 0.1rem);
+	width: calc(var(--in-width-b) - 1rch - 0.1rem);
 }
