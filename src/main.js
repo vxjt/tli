@@ -3,6 +3,7 @@ import './magoo.js'
 import { prob_combine, inde_combine, gr_note } from './magoo.js'
 
 var input_divs
+var list_divs
 var autosave = false // change
 
 var data = {
@@ -221,28 +222,28 @@ function init() {
 	}
 
 	/* draw input elements */
-	
+
 	let output_string = `<h1>Sheet</h1>`
 
 	for (let key in sheet) {
+		let list_string = ``
 		let type_string = ``
 		let class_string = ``
 		let post_string = ``
 
 		switch (sheet[key].type) {
 			case "text":
-				class_string = `class="solid input-text end"`
+				class_string = `class="solid input-text pad-lr end"`
 				type_string = `text`
 				break
 
 			case "list":
-				class_string = `class="solid input-list"`
-				post_string = `<div class="none">`
+				post_string = `▽<div>`
 				for (let a of Object.values(sheet[key].items)) {
-					post_string += `<div>${a}</div>`
+					post_string += `<div class="pad-lr list-item">${a}</div>`
 				}
 				post_string += `</div></div>`
-				type_string = `text`
+				list_string = `<label>${sheet[key].label}<div class="flex list-container relative solid"><input autocomplete="off" id="${key}" type="text" class="input-list pad-lr">${post_string}</label>`
 				break
 
 			case "check":
@@ -254,11 +255,16 @@ function init() {
 				console.warn(`init > sheet[key].type: ${sheet[key].type}`, sheet)
 		}
 
-		output_string += `
+		let temp = `
 		${(sheet[key].label ? `<label>${sheet[key].label}` : ``)}
-		${(sheet[key].type == "list" ? `<div class="inline-block relative">` : ``)}
-		<input id="${key}" type="${type_string}" ${class_string}> ${post_string}
+		<input autocomplete="off" id="${key}" type="${type_string}" ${class_string}> ${post_string}
 		${(sheet[key].label ? `</label>` : ``)}`
+
+		if (sheet[key].type == "list") {
+			output_string += list_string
+		} else {
+			output_string += temp
+		}
 	}
 
 	output_string = output_string.replace(/[^\S ]+| +(?=>)|(?<=>) +/g, '').trim()
@@ -268,6 +274,7 @@ function init() {
 	/* set vars & add events */
 
 	input_divs = document.querySelectorAll("input")
+	list_divs = document.querySelectorAll(".list-item")
 
 	document.addEventListener("visibilitychange", eventswitch)
 
@@ -275,6 +282,12 @@ function init() {
 		if (a.type == "button") {
 			a.addEventListener("click", eventswitch, { passive: true })
 		}
+	}
+
+	console.log(list_divs)
+
+	for (let a of list_divs) {
+		a.addEventListener("click", eventswitch, { passive: true })
 	}
 }
 
@@ -478,7 +491,7 @@ function calc_draw() {
 
 function flextable(a) {
 	let flex = document.createElement("div")
-	flex.className = "flex column"
+	flex.className = "inline-flex column"
 
 	let flexsoliditem
 	let flexitem
@@ -492,7 +505,7 @@ function flextable(a) {
 		for (let [x, y] of m) {
 			if (ii + 1 == m.size && i + 1 < a.length) {
 				flexsoliditem = document.createElement("div")
-				flexsoliditem.className = "flex space-between solid"
+				flexsoliditem.className = "inline-flex space-between solid"
 
 				div = document.createElement("div")
 				div.className = "mr4"
@@ -506,7 +519,7 @@ function flextable(a) {
 				flex.append(flexsoliditem)
 			} else {
 				flexitem = document.createElement("div")
-				flexitem.className = "flex space-between"
+				flexitem.className = "inline-flex space-between"
 
 				div = document.createElement("div")
 				div.className = "mr4"

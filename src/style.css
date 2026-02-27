@@ -1,8 +1,8 @@
 :root {
 	--color-a: #111111;
 	--color-b: #dddddd;
-	--in-width-a: 10rch;
-	--in-width-b: 16rch;
+	--width-a: 10rch;
+	--width-b: 16rch;
 	font-family: system-ui;
 	font-size: medium;
 }
@@ -47,7 +47,7 @@ input[type="button"] {
 	border: 0.1rem solid var(--color-b);
 	font-family: system-ui;
 	font-size: 1rem;
-	width: var(--in-width-b);
+	width: var(--width-b);
 }
 
 input[type="button"]:active {
@@ -69,13 +69,12 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]+div {
+	align-self: center;
 	background-color: var(--color-a);
 	border: 0.1rem solid var(--color-a);
-	display: inline-block;
 	height: 1rem;
 	margin-left: 2rch;
 	outline: 0.1rem solid var(--color-b);
-	vertical-align: text-bottom;
 	width: 1rem;
 }
 
@@ -85,13 +84,11 @@ input[type="checkbox"]:checked+div {
 
 input[type="text"] {
 	font-size: 1rem;
-	margin-left: 2rch;
-	padding-left: 1rch;
-	padding-right: 1rch;
+	line-height: 1.6;
 }
 
 label {
-	display: block;
+	display: flex;
 	margin-bottom: 1rch;
 }
 
@@ -104,6 +101,10 @@ label {
 }
 
 .flex {
+	display: flex;
+}
+
+.inline-flex {
 	display: inline-flex;
 }
 
@@ -119,6 +120,10 @@ label {
 	display: none;
 }
 
+.pad-lr {
+	padding: 0 1rch 0 1rch;
+}
+
 .relative {
 	position: relative;
 }
@@ -127,28 +132,44 @@ label {
 	justify-content: space-between;
 }
 
-.input-text {
-	width: calc(var(--in-width-a) - 2rch);
-}
-
 .solid {
 	border-color: var(--color-b);
 	border-style: solid;
 	border-width: 0 0 0.1rem 0;
 }
 
-.input-list {
-	width: calc(var(--in-width-b) - 2rch);
+.input-text {
+	margin-left: 2rch;
+	width: calc(var(--width-a) - 2rch);
 }
 
-.input-list + div {
+.input-list {
+	border: none;
+	flex: 1;
+	min-width: 0;
+}
+
+.input-list~div {
 	background-color: var(--color-a);
-	left: calc(2rch + 0.05rem);
-	outline-color: var(--color-b);
-	outline-style: solid;
-	outline-width: 0.1rem;
-	padding-left: 1rch;
+	outline: 0.1rem solid var(--color-b);
 	position: absolute;
-	top: calc(100% - 0.1rem);
-	width: calc(var(--in-width-b) - 1rch - 0.1rem);
+	top: round(calc(100% + 0.1rem), 1px);
+	width: var(--width-b);
+}
+
+.input-list:focus~div {
+	display: block;
+}
+
+.input-list:not(:focus)~div {
+	display: none;
+}
+
+.list-container {
+	margin-left: 2rch;
+	width: var(--width-b);
+}
+
+.list-item:hover {
+	text-decoration: underline;
 }
