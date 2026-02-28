@@ -1,23 +1,16 @@
 # Future
 
-- Input validation
-- Model basic stats
-- Expand notes
-- Refactor general layout code
-- Dropdown list
-- Allow inputs to be inline and add line break logic from results
-- Header logic
-- Read more about imports
-- Redo stat bonus calc
-- Show 'Damage Value' stats
-- Trim revamp based on numbers visible
-- Format functions
-- Redo flextable
-- Fix clear data
-- Saving needs to only save values
-- Buttons need to be taller
+- input validation
+- list, text input
+- list, better selection indicator -- icon?
+- list, down arrow redesign
+- checkbox, redesign -- circle?
 - label and name are similar variables
-- Icon next to selected items in list?
+- trim fix
+- saving is broken
+- design for zoom in
+
+- Show 'Damage Value' stats ?
 
 # Input
 
@@ -50,7 +43,22 @@ Align left
 
 Align right
 
+## Group
+
+```
+ _ Group Name ______________________________
+| 											|
+| Label			[50%]	Input	|	Input2	|
+| ...							|			|
+| Toggle Label	[50%]	Toggle	|			|
+|___________________________________________|
+```
+
 # Calculator
+
+## Input
+
+Weapon has three stats: Physical Damage, Critical Strike Rating and Attack Speed
 
 ## Evasion
 

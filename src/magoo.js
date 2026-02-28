@@ -22,6 +22,10 @@ Number.prototype.trim = function (n = 0) {
 	return Math.trunc(this) + Math.round(this % 1 * 10 ** n) / 10 ** n
 }
 
+export function cleanhtml(o) {
+	return o.replace(/[^\S ]+| +(?=>)|(?<=>) +/g, '').trim()
+}
+
 export function compare(a, b) {
 	let msg = ""
 
@@ -56,6 +60,23 @@ export function gr_note(b = 1, r = 5) {
 		result += `${x} ${(b * (((1 + 5 ** (1 / 2)) / 2) ** x)).trim(2)}\n`
 	}
 	return result
+}
+
+export function inde_combine(...m) {
+	let obj = {}
+	let array = []
+
+	for (let a = 0; a < m.length; a++) {
+		for (let b = 0; b < m[a].length; b++) {
+			obj[m[a][b][0]] = (obj[m[a][b][0]] || 0) + m[a][b][1] / m.length
+		}
+	}
+
+	for (let [k, v] of Object.entries(obj)) {
+		array.push([Number(k), v])
+	}
+
+	return array
 }
 
 export function prob_combine(...m) {
@@ -98,21 +119,4 @@ export function prob_combine(...m) {
 	}
 
 	return output_array
-}
-
-export function inde_combine(...m) {
-	let obj = {}
-	let array = []
-
-	for (let a = 0; a < m.length; a++) {
-		for (let b = 0; b < m[a].length; b++) {
-			obj[m[a][b][0]] = (obj[m[a][b][0]] || 0) + m[a][b][1] / m.length
-		}
-	}
-
-	for (let [k, v] of Object.entries(obj)) {
-		array.push([Number(k), v])
-	}
-
-	return array
 }

@@ -1,8 +1,12 @@
+/* base */
+
 :root {
 	--color-a: #111111;
 	--color-b: #dddddd;
-	--width-a: 10rch;
-	--width-b: 16rch;
+	--thin: round(0.1rem, 0.1px);
+	--width-a: round(10rch, 1px);
+	--width-b: round(16.18rch, 1px);
+	--width-c: round(26.18rch, 1px);
 	font-family: system-ui;
 	font-size: medium;
 }
@@ -21,32 +25,39 @@ body {
 
 h1 {
 	font-size: 2.62rem;
-	margin: 0;
+	margin: 0 0 1rem 0;
 }
 
 h2 {
 	font-size: 1.62rem;
-	margin: 0;
+	margin: 0 0 1rem 0;
+}
+
+h3 {
+	font-size: 1rem;
+	margin: 0 0 1rem 0;
+}
+
+h4 {
+	font-size: 1rem;
+	font-weight: normal;
+	margin: 0 0 1rem 0;
 }
 
 input {
 	background-color: var(--color-a);
 	color: var(--color-b);
+	font-family: system-ui;
+	font-size: medium;
+	line-height: 1.6;
 }
 
 input:focus {
 	outline: 0
 }
 
-input:invalid {
-	border-style: dotted;
-	border-width: 0 0 0.16rem 0;
-}
-
 input[type="button"] {
-	border: 0.1rem solid var(--color-b);
-	font-family: system-ui;
-	font-size: 1rem;
+	border: none;
 	width: var(--width-b);
 }
 
@@ -69,13 +80,11 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]+div {
-	align-self: center;
 	background-color: var(--color-a);
-	border: 0.1rem solid var(--color-a);
+	border: var(--thin) solid var(--color-a);
 	height: 1rem;
-	margin-left: 2rch;
-	outline: 0.1rem solid var(--color-b);
 	width: 1rem;
+	margin-left: var(--thin);
 }
 
 input[type="checkbox"]:checked+div {
@@ -83,13 +92,13 @@ input[type="checkbox"]:checked+div {
 }
 
 input[type="text"] {
-	font-size: 1rem;
-	line-height: 1.6;
+	padding: 0 1rch 0 1rch;
 }
 
-label {
-	display: flex;
-	margin-bottom: 1rch;
+/* singles */
+
+.center {
+	justify-content: center;
 }
 
 .column {
@@ -104,6 +113,10 @@ label {
 	display: flex;
 }
 
+.flex50 {
+	flex: 1 1 50%;
+}
+
 .inline-flex {
 	display: inline-flex;
 }
@@ -112,16 +125,20 @@ label {
 	display: inline-block;
 }
 
-.mr4 {
-	margin-right: 4rch;
+.margin-left {
+	margin-left: 4rch;
+}
+
+.margin-top {
+	margin-top: 1rem;
 }
 
 .none {
 	display: none;
 }
 
-.pad-lr {
-	padding: 0 1rch 0 1rch;
+.outline {
+	outline: var(--thin) solid var(--color-b);
 }
 
 .relative {
@@ -132,15 +149,30 @@ label {
 	justify-content: space-between;
 }
 
+/* items */
+
+.divider {
+	border-left: var(--thin) solid var(--color-b);
+	margin-left: 1rch;
+	margin-right: 1rch;
+}
+
 .solid {
 	border-color: var(--color-b);
 	border-style: solid;
-	border-width: 0 0 0.1rem 0;
+	border-width: 0 0 var(--thin) 0;
 }
 
-.input-text {
-	margin-left: 2rch;
-	width: calc(var(--width-a) - 2rch);
+.input-group {
+	padding: 1rem;
+}
+
+.input-group-title {
+	background-color: var(--color-a);
+	margin-left: 1rch;
+	padding: 0 1rch 0 1rch;
+	top: 1rex;
+	width: fit-content;
 }
 
 .input-list {
@@ -151,10 +183,9 @@ label {
 
 .input-list~div {
 	background-color: var(--color-a);
-	outline: 0.1rem solid var(--color-b);
 	position: absolute;
-	top: round(calc(100% + 0.1rem), 1px);
-	width: var(--width-b);
+	top: calc(100% + var(--thin));
+	width: var(--width-c);
 }
 
 .input-list:focus~div {
@@ -166,10 +197,24 @@ label {
 }
 
 .list-container {
-	margin-left: 2rch;
-	width: var(--width-b);
+	width: var(--width-c);
 }
 
 .list-item:hover {
-	text-decoration: underline;
+	background-color: var(--color-b);
+	color: var(--color-a);
+}
+
+.input-text {
+	width: calc(var(--width-a) - 2rch);
+}
+
+.fakea {
+	width: var(--width-a);
+	display: flex;
+	align-items: center;
+}
+
+.fakeb {
+	width: var(--width-a);
 }
