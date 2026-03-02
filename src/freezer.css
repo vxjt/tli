@@ -1,0 +1,178 @@
+h1 {
+	font-size: 2.62rem;
+	margin: 0 0 1rem 0;
+}
+
+h2 {
+	font-size: 1.62rem;
+	margin: 0 0 1rem 0;
+}
+
+h3 {
+	font-size: 1rem;
+	margin: 0 0 1rem 0;
+}
+
+h4 {
+	font-size: 1rem;
+	font-weight: normal;
+	margin: 0 0 1rem 0;
+}
+
+input {
+	background-color: var(--color-a);
+	color: var(--color-b);
+	font-size: medium;
+	line-height: 1.6;
+}
+
+input:focus {
+	outline: 0
+}
+
+input[type="button"] {
+	border: none;
+	width: var(--width-b);
+}
+
+input[type="button"]:active {
+	background-color: var(--color-b);
+	color: var(--color-a);
+}
+
+input[type="button"]:hover {
+	cursor: pointer;
+}
+
+input[type="button"]:focus {
+	background-color: var(--color-b);
+	color: var(--color-a);
+}
+
+input[type="text"] {
+	padding: 0 1rch 0 1rch;
+}
+
+/* singles */
+
+.center {
+	justify-content: center;
+}
+
+.column {
+	flex-direction: column;
+}
+
+.end {
+	text-align: end;
+}
+
+.flex {
+	display: flex;
+}
+
+.flex50 {
+	flex: 1 1 50%;
+}
+
+.inline-flex {
+	display: inline-flex;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.margin-left {
+	margin-left: 4rch;
+}
+
+.margin-top {
+	margin-top: 1rem;
+}
+
+.none {
+	display: none;
+}
+
+.outline {
+	outline: var(--thin) solid var(--color-b);
+}
+
+.relative {
+	position: relative;
+}
+
+.space-between {
+	justify-content: space-between;
+}
+
+/* items */
+
+.divider {
+	border-left: var(--thin) solid var(--color-b);
+	margin-left: 1rch;
+	margin-right: 1rch;
+}
+
+.solid {
+	border-color: var(--color-b);
+	border-style: solid;
+	border-width: 0 0 var(--thin) 0;
+}
+
+.input-group {
+	padding: 1rem;
+}
+
+.input-group-title {
+	background-color: var(--color-a);
+	margin-left: 1rch;
+	padding: 0 1rch 0 1rch;
+	top: 1rex;
+	width: fit-content;
+}
+
+.input-list {
+	border: none;
+	flex: 1;
+	min-width: 0;
+}
+
+.input-list~div {
+	background-color: var(--color-a);
+	position: absolute;
+	top: calc(100% + var(--thin));
+	width: var(--width-c);
+}
+
+.input-list:focus~div {
+	display: block;
+}
+
+.input-list:not(:focus)~div {
+	display: none;
+}
+
+.list-container {
+	width: var(--width-c);
+}
+
+.list-item:hover {
+	background-color: var(--color-b);
+	color: var(--color-a);
+}
+
+.input-text {
+	width: calc(var(--width-a) - 2rch);
+}
+
+.fakea {
+	width: var(--width-a);
+	display: flex;
+	align-items: center;
+}
+
+.fakeb {
+	width: var(--width-a);
+}

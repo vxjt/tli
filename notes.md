@@ -4,7 +4,6 @@
 - list, text input
 - list, better selection indicator -- icon?
 - list, down arrow redesign
-- checkbox, redesign -- circle?
 - label and name are similar variables
 - trim fix
 - saving is broken
@@ -12,7 +11,41 @@
 
 - Show 'Damage Value' stats ?
 
+- unify margins, inputs have no margin and padding is between visible objects and empty space
+- check / uncheck for autosave, when unchecked ask to clear
+- note box
+
 # Input
+
+## Box
+
+`beforeinput` main event hook
+
+blur
+compositionend
+compositionstart
+compositionupdate
+contextmenu
+copy
+cut
+dragend
+dragenter
+dragleave
+dragover
+dragstart
+drop
+focus
+keydown
+keypress
+keyup
+mousedown
+paste
+scroll
+selectionchange
+touchmove
+touchstart
+
+Empty quick config
 
 ## List
 
@@ -80,6 +113,17 @@ Thunder Strike seems to alternate between 1 and 2 base stacks from the 1 stack/s
 
 Git.Git
 OpenJS.NodeJS
+Python.Python.3.14
+fonttools 
+brotli
+
+# fonttools
+
+Requires python, required `brotli`.
+
+``` python
+ttLib.woff2 compress <font.ttf>
+```
 
 # CSS
 

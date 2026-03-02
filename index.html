@@ -9,43 +9,13 @@
 </head>
 
 <body>
-	<div id="doc"></div>
-	<h1>Extra</h1>
-	<input class="outline" type="button" value="Clear Data">
-	<p></p>
-	<div class="inline-flex column">
-		Weapon
-		<label class="flex space-between">Physical Damage
-			<div class="margin-left flex">
-				<input id="id" type="text" class="solid end input-text">
-				<div class="divider"></div>
-				<input id="id_off" type="text" class="solid end input-text">
-			</div>
-		</label>
-		<label class="flex space-between">Critical Strike Rating
-			<div class="margin-left flex">
-				<input id="id" type="text" class="solid end input-text">
-				<div class="divider"></div>
-				<input id="id_off" type="text" class="solid end input-text">
-			</div>
-		</label>
-		<label class="flex space-between">Attack Speed
-			<div class="margin-left flex">
-				<input id="id" type="text" class="solid end input-text">
-				<div class="divider"></div>
-				<input id="id_off" type="text" class="solid end input-text">
-			</div>
-		</label>
-		<label class="flex space-between">Dual Wield
-			<div class="margin-left flex">
-				<div class="fakea">
-					<input id="weapon" type="checkbox">
-					<div class="outline"></div>
-				</div>
-				<div class="divider"></div>
-				<div class="fakeb"></div>
-			</div>
-		</label>
+	<div>
+		<div id="box" contentEditable="true"></div>
+		<label>
+			Autosave
+			<input id="save" type="checkbox" checked="true">
+			<span class="yes">◆</span><span class="no">◇</span>
+		</label><input id="reset" type="button" value="Reset" /><span>☜</span>
 	</div>
 	<script type="module" src="/src/main.js"></script>
 </body>

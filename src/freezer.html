@@ -1,0 +1,60 @@
+	<div id="doc"></div>
+	<h1>Extra</h1>
+	<input class="outline" type="button" value="Clear Data">
+	<p></p>
+	<div class="inline-flex column">
+		Weapon
+		<label class="flex space-between">Physical Damage
+			<div class="margin-left flex">
+				<input id="id" type="text" class="solid end input-text">
+				<div class="divider"></div>
+				<input id="id_off" type="text" class="solid end input-text">
+			</div>
+		</label>
+		<label class="flex space-between">Critical Strike Rating
+			<div class="margin-left flex">
+				<input id="id" type="text" class="solid end input-text">
+				<div class="divider"></div>
+				<input id="id_off" type="text" class="solid end input-text">
+			</div>
+		</label>
+		<label class="flex space-between">Attack Speed
+			<div class="margin-left flex">
+				<input id="id" type="text" class="solid end input-text">
+				<div class="divider"></div>
+				<input id="id_off" type="text" class="solid end input-text">
+			</div>
+		</label>
+		<label class="flex space-between">Dual Wield
+			<div class="margin-left flex">
+				<div class="fakea">
+					<input id="weapon" type="checkbox">
+					<div class="outline"></div>
+				</div>
+				<div class="divider"></div>
+				<div class="fakeb"></div>
+			</div>
+		</label>
+	</div>
+
+<h1>Sheet</h1>
+	<h2>Resistance</h2>
+	<input min="0" data-label="Cold Resistance" id="cold_resistance"><br>
+	<input min="0" data-label="Fire Resistance" id="fire_resistance"><br>
+	<input min="0" data-label="Lightning Resistance" id="lightning_resistance"><br>
+	<input min="0" data-label="Erosion Resistance" id="erosion_resistance"><br>
+	<h2>Survival</h2>
+	<input min="0" data-label="Evasion" id="evasion"><br>
+	<input min="0" data-label="Attack Block Chance" id="attack_block"><br>
+	<input min="0" data-label="Damage Block Ratio" id="block_ratio"><br>
+	<h2>Misc</h2>
+	<input min="0" data-label="Attack Evasion Rate" id="attack_evasion"><br>
+	<h1>Settings</h1>
+	<h2>Enemy</h2>
+	<input min="130" max="680" data-default="680" data-label="Enemy Accuracy" id="enemy_accuracy"><br>
+	<h2>Incoming Hit</h2>
+	<input min="0" data-default="100" data-label="Physical" id="physical_hit"><br>
+	<input min="0" data-label="Cold" id="cold_hit"><br>
+	<input min="0" data-label="Fire" id="fire_hit"><br>
+	<input min="0" data-label="Lightning" id="lightning_hit"><br>
+	<input min="0" data-label="Erosion" id="erosion_hit">

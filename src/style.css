@@ -1,14 +1,21 @@
-/* base */
+@font-face {
+	font-family: EBGaramond;
+	src:
+		local("EB Garamond"),
+		url("ebgaramond.woff2") format("woff2");
+}
 
 :root {
-	--color-a: #111111;
-	--color-b: #dddddd;
-	--thin: round(0.1rem, 0.1px);
-	--width-a: round(10rch, 1px);
-	--width-b: round(16.18rch, 1px);
-	--width-c: round(26.18rch, 1px);
-	font-family: system-ui;
-	font-size: medium;
+	--color-a: #070707;
+	--color-b: #eeeeee;
+	--wide-a: 0.1rch;
+	--wide-b: 2rch;
+	font-family: EBGaramond, ui-serif, serif;
+	font-size: large;
+}
+
+* {
+	font-family: inherit;
 }
 
 ::selection {
@@ -17,62 +24,33 @@
 }
 
 body {
+	align-items: center;
 	background-color: var(--color-a);
 	color: var(--color-b);
+	display: flex;
+	flex-direction: column;
 	line-height: 1.6;
-	margin: 2rem 4rch 1rem 4rch;
-}
-
-h1 {
-	font-size: 2.62rem;
-	margin: 0 0 1rem 0;
-}
-
-h2 {
-	font-size: 1.62rem;
-	margin: 0 0 1rem 0;
-}
-
-h3 {
-	font-size: 1rem;
-	margin: 0 0 1rem 0;
-}
-
-h4 {
-	font-size: 1rem;
-	font-weight: normal;
-	margin: 0 0 1rem 0;
+	margin: 4rch;
 }
 
 input {
-	background-color: var(--color-a);
-	color: var(--color-b);
-	font-family: system-ui;
+	border: 0;
 	font-size: medium;
-	line-height: 1.6;
-}
-
-input:focus {
-	outline: 0
+	padding: 0;
 }
 
 input[type="button"] {
-	border: none;
-	width: var(--width-b);
+	background-color: var(--color-a);
+	color: var(--color-b);
 }
 
-input[type="button"]:active {
-	background-color: var(--color-b);
-	color: var(--color-a);
+input[type="button"]+span {
+	display: none;
+	margin-left: var(--wide-b);
 }
 
-input[type="button"]:hover {
-	cursor: pointer;
-}
-
-input[type="button"]:focus {
-	background-color: var(--color-b);
-	color: var(--color-a);
+input[type="button"]:hover+span {
+	display: inline;
 }
 
 input[type="checkbox"] {
@@ -80,141 +58,43 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]+div {
-	background-color: var(--color-a);
-	border: var(--thin) solid var(--color-a);
-	height: 1rem;
-	width: 1rem;
-	margin-left: var(--thin);
+	margin-left: var(--wide-b);
 }
 
-input[type="checkbox"]:checked+div {
-	background-color: var(--color-b);
+.yes {
+	display: none;
+	font-size: 1.62rem;
+	margin-left: var(--wide-b);
+	transform: translateY(calc(-1.62rem * 0.4));
 }
 
-input[type="text"] {
-	padding: 0 1rch 0 1rch;
+.no {
+	display: inline;
+	font-size: 1.62rem;
+	margin-left: var(--wide-b);
+	transform: translateY(calc(-1.62rem * 0.4));
 }
 
-/* singles */
-
-.center {
-	justify-content: center;
+input[type="checkbox"]:checked~.yes {
+	display: inline;
 }
 
-.column {
-	flex-direction: column;
+input[type="checkbox"]:checked~.no {
+	display: none;
 }
 
-.end {
-	text-align: end;
-}
-
-.flex {
-	display: flex;
-}
-
-.flex50 {
-	flex: 1 1 50%;
-}
-
-.inline-flex {
+label {
 	display: inline-flex;
+	margin-top: var(--wide-b);
 }
 
-.inline-block {
-	display: inline-block;
+#box {
+	height: 20rem;
+	outline: var(--wide-a) solid var(--color-b);
+	padding: var(--wide-b);
+	width: calc(36rem - 2 * var(--wide-b));
 }
 
-.margin-left {
-	margin-left: 4rch;
-}
-
-.margin-top {
-	margin-top: 1rem;
-}
-
-.none {
-	display: none;
-}
-
-.outline {
-	outline: var(--thin) solid var(--color-b);
-}
-
-.relative {
-	position: relative;
-}
-
-.space-between {
-	justify-content: space-between;
-}
-
-/* items */
-
-.divider {
-	border-left: var(--thin) solid var(--color-b);
-	margin-left: 1rch;
-	margin-right: 1rch;
-}
-
-.solid {
-	border-color: var(--color-b);
-	border-style: solid;
-	border-width: 0 0 var(--thin) 0;
-}
-
-.input-group {
-	padding: 1rem;
-}
-
-.input-group-title {
-	background-color: var(--color-a);
-	margin-left: 1rch;
-	padding: 0 1rch 0 1rch;
-	top: 1rex;
-	width: fit-content;
-}
-
-.input-list {
-	border: none;
-	flex: 1;
-	min-width: 0;
-}
-
-.input-list~div {
-	background-color: var(--color-a);
-	position: absolute;
-	top: calc(100% + var(--thin));
-	width: var(--width-c);
-}
-
-.input-list:focus~div {
-	display: block;
-}
-
-.input-list:not(:focus)~div {
-	display: none;
-}
-
-.list-container {
-	width: var(--width-c);
-}
-
-.list-item:hover {
-	background-color: var(--color-b);
-	color: var(--color-a);
-}
-
-.input-text {
-	width: calc(var(--width-a) - 2rch);
-}
-
-.fakea {
-	width: var(--width-a);
-	display: flex;
-	align-items: center;
-}
-
-.fakeb {
-	width: var(--width-a);
+#reset {
+	margin-left: calc(2 * var(--wide-b));
 }
